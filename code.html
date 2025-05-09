@@ -1,0 +1,51 @@
+<!-- 5. HTML + JavaScript Version -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GD DAT Decryptor</title>
+</head>
+<body>
+    <h2>Geometry Dash DAT Decryptor</h2>
+    <input type="file" id="fileInput">
+    <button onclick="decryptFile()">Decrypt</button>
+    <pre id="output"></pre>
+
+    <script>
+        const xorKey = 'GeometryDash';
+
+        function xorDecrypt(data, key) {
+            let result = '';
+            for (let i = 0; i < data.length; i++) {
+                result += String.fromCharCode(data.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+            }
+            return result;
+        }
+
+        function base64Decode(base64) {
+            return atob(base64);
+        }
+
+        function decryptFile() {
+            const fileInput = document.getElementById('fileInput');
+            const output = document.getElementById('output');
+
+            if (fileInput.files.length === 0) {
+                alert('Please select a .dat file');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const base64Content = e.target.result.split(',')[1];
+                const decodedContent = base64Decode(base64Content);
+                const decryptedContent = xorDecrypt(decodedContent, xorKey);
+                output.textContent = decryptedContent;
+            };
+            reader.readAsDataURL(file);
+        }
+    </script>
+</body>
+</html>
